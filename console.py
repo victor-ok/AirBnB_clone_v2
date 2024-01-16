@@ -16,6 +16,7 @@ from models.review import Review
 #     ret = cmd.Cmd.parseline(self, arg)
 #     return ret
 
+
 def parse(arg):
     curly_braces = re.search(r"\{(.*?)\}", arg)
     brackets = re.search(r"\[(.*?)\]", arg)
@@ -32,6 +33,7 @@ def parse(arg):
         retl = [i.strip(",") for i in lexer]
         retl.append(curly_braces.group())
         return retl
+
 
 class HBNBCommand(cmd.Cmd):
     """
@@ -109,8 +111,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         elif cmd1[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
+        elif len(cmd1) == 1:
+            print("** instance id missing **")
         elif "{}.{}".format(cmd1[0], cmd1[1]) not in objdict:
-            print("** no instnace found **")
+            print("** no instance found **")
         else:
             print(objdict["{}.{}".format(cmd1[0], cmd1[1])])
 
@@ -127,7 +131,7 @@ class HBNBCommand(cmd.Cmd):
         elif len(cmd1) == 1:
             print("** instance id missing **")
         elif "{}.{}".format(cmd1[0], cmd1[1]) not in objdict:
-            print("** no instnace found **")
+            print("** no instance found **")
         else:
             del objdict["{}.{}".format(cmd1[0], cmd1[1])]
             storage.save()
@@ -205,6 +209,7 @@ class HBNBCommand(cmd.Cmd):
             if cmd1[0] == obj.__class__.__name__:
                 count += 1
         print(count)
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
