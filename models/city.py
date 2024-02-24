@@ -3,7 +3,7 @@
 from models.base_model import BaseModel
 
 
-def City(BaseModel):
+class City(BaseModel):
     """
     reps a city
 
