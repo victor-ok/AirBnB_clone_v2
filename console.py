@@ -89,16 +89,48 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, arg):
         """
-        creates a new class instance and print its id
+        create <class> <key 1>=<value 2> <key 2>=<value 2>
+        creates a new class instance with given key/value and print its id
         """
-        cmd1 = parse(arg)
-        if len(cmd1) == 0:
+
+        try:
+            if not arg:
+                raise SyntaxError()
+            cmd_list = arg.split(" ")
+
+            kwargs = {}
+            for i in range(1, len(cmd_list)):
+                key, value = tuple(cmd_list[i].split("="))
+                if value[0] == '"':
+                    value = value.strip('"').replace("_", " ")
+                else:
+                    try:
+                        value = eval(value)
+                    except (SyntaxError, NameError):
+                        continue
+                kwargs[key] = value
+
+            if kwargs == {}:
+                obj = eval(cmd_list[0])()
+            else:
+                obj = eval(cmd_list[0])(**kwargs)
+                storage.new(obj)
+            print(obj.id)
+            obj.save()
+
+        except SyntaxError:
             print("** class name missing **")
-        elif cmd1[0] not in HBNBCommand.__classes:
+        except NameError:
             print("** class doesn't exist **")
-        else:
-            print(eval(cmd1[0])().id)
-            storage.save()
+
+        # cmd1 = parse(arg)
+        # if len(cmd1) == 0:
+        #     print("** class name missing **")
+        # elif cmd1[0] not in HBNBCommand.__classes:
+        #     print("** class doesn't exist **")
+        # else:
+        #     print(eval(cmd1[0])().id)
+        #     storage.save()
 
     def do_show(self, arg):
         """
