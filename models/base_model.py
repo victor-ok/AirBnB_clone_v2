@@ -3,10 +3,25 @@
 import models
 from uuid import uuid4
 from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import String
+Base = declarative_base()
 
 
 class BaseModel:
-    """defines the BaseModel of the AirBnB clone"""
+    """defines the BaseModel of the AirBnB clone
+    Attributes:
+        id (sqlalchemy String): The BaseModel id.
+        created_at (sqlalchemy DateTime): The datetime at creation.
+        updated_at (sqlalchemy DateTime): The datetime of last update.
+    """
+
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+
 
     def __init__(self, *args, **kwargs):
         """
@@ -26,12 +41,11 @@ class BaseModel:
                     self.__dict__[i] = datetime.strptime(j, tform)
                 else:
                     self.__dict__[i] = j
-        else:
-            models.storage.new(self)
 
     def save(self):
         """update the update_at attr with the current datetime"""
         self.updated_at = datetime.today()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
@@ -45,7 +59,12 @@ class BaseModel:
         baseDict["created_at"] = self.created_at.isoformat()
         baseDict["updated_at"] = self.updated_at.isoformat()
         baseDict["__class__"] = self.__class__.__name__
+        baseDict.pop("_sa_instance_state", None)
         return baseDict
+    
+    def delete(self):
+        """Delete the current instance from storage."""
+        models.storage.delete(self)
 
     def __str__(self):
         """returns the print representation of the BaseModel instance."""
